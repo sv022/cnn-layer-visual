@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useNetworkStore } from '@/stores/network'
+import { useVisualsStore } from '@/stores/visuals'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import LayerGrid from './conv/LayerGrid.vue'
 import LabeledStepper from './conv/LabeledStepper.vue'
+import type { HighlightWindow } from '@/composables/useKernelHighlight.ts'
+import { cellToPointWindow, useConvOutputCell } from '@/composables/usePixelProjection.ts'
 
 const networkStore = useNetworkStore()
+const visualsStore = useVisualsStore()
 
 const kernelMatrices = computed(() => networkStore.convConfig.kernels.map((k) => k.weights))
 const featureMaps = computed(() => networkStore.convOutput)
@@ -17,6 +21,17 @@ const outputShapeLabel = computed(() => {
   const cols = first?.[0]?.length ?? 0
   return `${rows}×${cols}×${featureMaps.value.length}`
 })
+
+const inputWindow = computed<HighlightWindow | null>(() => {
+  if (!visualsStore.showInputWindow) return null
+  const cell = visualsStore.selectedInputCell
+  if (!cell) return null
+  return { row: cell.row, col: cell.col, size: networkStore.convConfig.kernelSize }
+})
+
+const strideRef = computed(() => networkStore.convConfig.stride)
+const convCell = useConvOutputCell(inputWindow, strideRef)
+const outputProjectionWindow = cellToPointWindow(convCell)
 
 function updateStride(value: number) {
   networkStore.updateConvConfig({ stride: Math.max(1, value) })
@@ -58,6 +73,7 @@ function updatePadding(value: number) {
             :maps="featureMaps"
             normalize-as-layer
             accent-color-var="var(--color-convolution)"
+            :projection-window="outputProjectionWindow"
           />
         </div>
       </div>

@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useNetworkStore } from '@/stores/network'
+import { useVisualsStore } from '@/stores/visuals'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import LayerGrid from './conv/LayerGrid.vue'
+import { useConvOutputCell, cellToPointWindow } from '@/composables/usePixelProjection'
+import type { HighlightWindow } from '@/composables/useKernelHighlight'
 
 const networkStore = useNetworkStore()
+const visualsStore = useVisualsStore()
 
 const featureMaps = computed(() => networkStore.reluOutput)
 
@@ -14,6 +18,15 @@ const outputShapeLabel = computed(() => {
   const cols = first?.[0]?.length ?? 0
   return `${rows}×${cols}×${featureMaps.value.length}`
 })
+
+const inputWindow = computed<HighlightWindow | null>(() => {
+  const cell = visualsStore.selectedInputCell
+  if (!cell) return null
+  return { row: cell.row, col: cell.col, size: networkStore.convConfig.kernelSize }
+})
+const strideRef = computed(() => networkStore.convConfig.stride)
+const reluCell = useConvOutputCell(inputWindow, strideRef)
+const projectionWindow = cellToPointWindow(reluCell)
 </script>
 
 <template>
@@ -31,7 +44,7 @@ const outputShapeLabel = computed(() => {
         <p class="mb-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
           Activation maps
         </p>
-        <LayerGrid :maps="featureMaps" normalize-as-layer accent-color-var="var(--color-dense)" />
+        <LayerGrid :maps="featureMaps" normalize-as-layer accent-color-var="var(--color-dense)" :projection-window="visualsStore.showInputWindow ? projectionWindow : null" />
       </div>
     </CardContent>
   </Card>

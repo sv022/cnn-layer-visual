@@ -9,11 +9,13 @@ const props = withDefaults(
     isActive?: boolean
     isPreNormalized?: boolean
     accentColorVar?: string
+    projectionWindow?: { row: number; col: number; size: number } | null
   }>(),
   {
     isActive: false,
     isPreNormalized: false,
     accentColorVar: 'var(--color-convolution)',
+    projectionWindow: null
   },
 )
 
@@ -40,6 +42,10 @@ const borderStyle = computed(() =>
     @mouseenter="emit('hover', true)"
     @mouseleave="emit('hover', false)"
   >
-    <MatrixCanvas :matrix="matrix" :is-pre-normalized="isPreNormalized" />
+    <MatrixCanvas
+    :matrix="matrix"
+    :is-pre-normalized="isPreNormalized"
+    :highlight-window="projectionWindow"
+    />
   </div>
 </template>

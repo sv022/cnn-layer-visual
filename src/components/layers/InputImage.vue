@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useNetworkStore } from '@/stores/network'
 import { useVisualsStore } from '@/stores/visuals'
 import MatrixCanvas from '@/components/matrix/MatrixCanvas.vue'
@@ -24,10 +24,18 @@ const paddedSize = computed(() => sourceSize.value + padding.value * 2)
 const kernelSize = computed(() => networkStore.convConfig.kernelSize)
 const stride = computed(() => networkStore.convConfig.stride)
 
-const { highlightWindow, selectCell, selectedCell } = useKernelHighlight(
-  paddedSize,
-  kernelSize,
-  stride,
+const { highlightWindow, selectCell, selectedCell } = useKernelHighlight(paddedSize, kernelSize, stride)
+
+watch(
+  highlightWindow,
+  (window) => {
+    visualsStore.setSelectedInputCell(window ? { row: window.row, col: window.col } : null)
+  },
+  { immediate: true },
+)
+
+const visibleHighlightWindow = computed(() =>
+  visualsStore.showInputWindow ? highlightWindow.value : null,
 )
 
 const selectedSourceCell = computed(() => {
@@ -104,9 +112,8 @@ async function loadImageFile(file: File) {
             <MatrixCanvas
               :matrix="networkStore.paddedInputImage"
               is-pre-normalized
-              :show-values="visualsStore.showPixelValues"
               :show-grid="visualsStore.showPixelBorders"
-              :highlight-window="highlightWindow"
+              :highlight-window="visibleHighlightWindow"
               @cell-click="handleCellClick"
             />
           </div>
@@ -129,10 +136,10 @@ async function loadImageFile(file: File) {
         <div class="flex items-center gap-2">
           <Checkbox
             id="show-values"
-            :model-value="visualsStore.showPixelValues"
-            @update:model-value="(v) => (visualsStore.showPixelValues = !!v)"
+            :model-value="visualsStore.showInputWindow"
+            @update:model-value="(v) => (visualsStore.showInputWindow = !!v)"
           />
-          <Label for="show-values" class="text-[13px]">Show pixel values</Label>
+          <Label for="show-values" class="text-[13px]">Show input window</Label>
         </div>
         <div class="flex items-center gap-2">
           <Checkbox
@@ -145,7 +152,7 @@ async function loadImageFile(file: File) {
       </div>
 
       <div class="flex flex-col gap-2">
-        <Label class="text-[11px] text-muted-foreground">Pre-trained datasets</Label>
+        <Label class="text-[11px] text-muted-foreground">Pretrained datasets</Label>
         <div class="flex overflow-hidden rounded-md border border-border text-[11px]">
           <button
             class="flex-1 py-1.5"
@@ -175,16 +182,11 @@ async function loadImageFile(file: File) {
           <button
             v-for="sample in sampleThumbnails"
             :key="sample.id"
-            class="h-12 w-12 overflow-hidden rounded-md border border-border"
+            class="aspect-square w-12 overflow-hidden rounded-md border border-border"
             :title="sample.label"
             @click="selectSample(sample)"
           >
-            <MatrixCanvas
-              :matrix="sample.data"
-              is-pre-normalized
-              :target-px="48"
-              :max-cell-px="2"
-            />
+            <MatrixCanvas :matrix="sample.data" is-pre-normalized />
           </button>
         </div>
       </div>
