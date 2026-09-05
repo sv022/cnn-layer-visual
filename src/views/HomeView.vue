@@ -3,6 +3,9 @@ import TopBar from '@/components/layout/TopBar.vue'
 import PipelineLayout from '@/components/layout/PipelineLayout.vue'
 import InputImage from '@/components/layers/InputImage.vue'
 import ConvLayerPanel from '@/components/layers/ConvLayerPanel.vue'
+import ReluLayerPanel from '@/components/layers/ReluLayerPanel.vue';
+import PoolLayerPanel from '@/components/layers/PoolLayerPanel.vue';
+import StageConnector from '@/components/layout/StageConnector.vue';
 </script>
 
 <template>
@@ -11,7 +14,12 @@ import ConvLayerPanel from '@/components/layers/ConvLayerPanel.vue'
 
     <PipelineLayout>
       <InputImage />
+      <StageConnector />
       <ConvLayerPanel />
+      <StageConnector />
+      <ReluLayerPanel />
+      <StageConnector />
+      <PoolLayerPanel />
     </PipelineLayout>
   </div>
 </template>
