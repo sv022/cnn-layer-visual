@@ -24,7 +24,11 @@ const paddedSize = computed(() => sourceSize.value + padding.value * 2)
 const kernelSize = computed(() => networkStore.convConfig.kernelSize)
 const stride = computed(() => networkStore.convConfig.stride)
 
-const { highlightWindow, selectCell, selectedCell } = useKernelHighlight(paddedSize, kernelSize, stride)
+const { highlightWindow, selectCell, selectedCell } = useKernelHighlight(
+  paddedSize,
+  kernelSize,
+  stride,
+)
 
 watch(
   highlightWindow,
@@ -62,7 +66,7 @@ function handlePixelUpdate(value: number) {
 
 function selectDataset(dataset: 'mnist-digits' | 'fashion-mnist') {
   activeDataset.value = dataset
-  networkStore.loadPretrainedKernels(dataset)
+  selectSample(sampleThumbnails.value[0]!)
 }
 
 function selectSample(sample: SampleImage) {
@@ -135,11 +139,11 @@ async function loadImageFile(file: File) {
       <div class="flex flex-col gap-2">
         <div class="flex items-center gap-2">
           <Checkbox
-            id="show-values"
+            id="show-window"
             :model-value="visualsStore.showInputWindow"
             @update:model-value="(v) => (visualsStore.showInputWindow = !!v)"
           />
-          <Label for="show-values" class="text-[13px]">Show input window</Label>
+          <Label for="show-window" class="text-[13px]">Show input window</Label>
         </div>
         <div class="flex items-center gap-2">
           <Checkbox
@@ -152,7 +156,7 @@ async function loadImageFile(file: File) {
       </div>
 
       <div class="flex flex-col gap-2">
-        <Label class="text-[11px] text-muted-foreground">Pretrained datasets</Label>
+        <Label class="text-[11px] text-muted-foreground">Example images</Label>
         <div class="flex overflow-hidden rounded-md border border-border text-[11px]">
           <button
             class="flex-1 py-1.5"

@@ -10,12 +10,14 @@ const props = withDefaults(
     maps: FeatureMaps
     normalizeAsLayer?: boolean
     accentColorVar?: string
+    showValues?: boolean
     columns?: number
     projectionWindow?: { row: number; col: number; size: number } | null
   }>(),
   {
     normalizeAsLayer: true,
     accentColorVar: 'var(--color-convolution)',
+    showValues: false,
     columns: 2,
     projectionWindow: null,
   },
@@ -41,6 +43,7 @@ function handleHover(index: number, hovered: boolean) {
       is-pre-normalized
       :is-active="visualsStore.hoveredChannelIndex === index"
       :accent-color-var="accentColorVar"
+      :show-values="showValues"
       :projection-window="projectionWindow"
       @select="visualsStore.setHoveredChannel(index)"
       @hover="(hovered) => handleHover(index, hovered)"

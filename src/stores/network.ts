@@ -86,5 +86,6 @@ export const useNetworkStore = defineStore('network', () => {
 })
 
 function createBlankImage(size: number): Matrix2D {
+  // oxlint-disable-next-line unicorn/no-new-array
   return Array.from({ length: size }, () => new Array(size).fill(0))
 }

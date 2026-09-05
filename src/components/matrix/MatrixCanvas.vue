@@ -42,6 +42,7 @@ const displayMatrix = computed<Matrix2D>(() => {
 })
 
 function computeCellBounds(count: number, totalPx: number): number[] {
+  // oxlint-disable-next-line unicorn/no-new-array
   const bounds = new Array(count + 1)
   for (let i = 0; i <= count; i++) {
     bounds[i] = Math.round((i * totalPx) / count)
