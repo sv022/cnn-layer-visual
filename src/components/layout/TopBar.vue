@@ -8,6 +8,7 @@ interface LayerTypeTag {
 
 const layerTypes: LayerTypeTag[] = [
   { label: 'Convolution', colorVar: 'var(--color-convolution)' },
+  { label: 'Activation', colorVar: 'var(--color-activation)' },
   { label: 'Pooling', colorVar: 'var(--color-pooling)' },
 ]
 </script>
@@ -22,10 +23,7 @@ const layerTypes: LayerTypeTag[] = [
       variant="outline"
       class="gap-1.5 rounded-full text-[11px] font-medium text-muted-foreground"
     >
-      <span
-        class="h-1.5 w-1.5 rounded-full"
-        :style="{ backgroundColor: layer.colorVar }"
-      />
+      <span class="h-1.5 w-1.5 rounded-full" :style="{ backgroundColor: layer.colorVar }" />
       {{ layer.label }}
     </Badge>
   </header>

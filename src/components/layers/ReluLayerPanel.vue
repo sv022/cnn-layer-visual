@@ -30,10 +30,10 @@ const projectionWindow = cellToPointWindow(reluCell)
 </script>
 
 <template>
-  <Card class="w-75 border-l-[3px]" :style="{ borderLeftColor: 'var(--color-dense)' }">
+  <Card class="w-75 border-l-[3px]" :style="{ borderLeftColor: 'var(--color-activation)' }">
     <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
       <CardTitle class="flex items-center gap-1.5 text-[13px] font-semibold">
-        <span class="h-2 w-2 rounded-full" style="background: var(--color-dense)" />
+        <span class="h-2 w-2 rounded-full" style="background: var(--color-activation)" />
         ReLU
       </CardTitle>
       <span class="text-[11px] text-muted-foreground">{{ outputShapeLabel }}</span>
@@ -44,7 +44,12 @@ const projectionWindow = cellToPointWindow(reluCell)
         <p class="mb-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
           Activation maps
         </p>
-        <LayerGrid :maps="featureMaps" normalize-as-layer accent-color-var="var(--color-dense)" :projection-window="visualsStore.showInputWindow ? projectionWindow : null" />
+        <LayerGrid
+          :maps="featureMaps"
+          normalize-as-layer
+          accent-color-var="var(--color-dense)"
+          :projection-window="visualsStore.showInputWindow ? projectionWindow : null"
+        />
       </div>
     </CardContent>
   </Card>

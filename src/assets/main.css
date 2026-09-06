@@ -55,8 +55,9 @@
   --color-charcoal: var(--color-charcoal);
   --color-carbon: var(--color-carbon);
 
-  --color-input: var(--color-input);
+  --color-input: var(--color-input-l);
   --color-convolution: var(--color-convolution);
+  --color-activation: var(--color-activation);
   --color-pooling: var(--color-pooling);
   --color-dense: var(--color-dense);
 
@@ -70,7 +71,6 @@
   --color-taupe-700: var(--color-taupe-700);
 
   --color-border: var(--border);
-  --color-input: var(--color-input-l);
   --font-heading: var(--font-sans);
 }
 
@@ -181,6 +181,7 @@
 
   --color-input-l: #799098;
   --color-convolution: #7f938a;
+  --color-activation: #ad7e8b;
   --color-pooling: #8e8d9e;
   --color-dense: #9d8a83;
   --color-output: #ad7e8b;
