@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useVisualsStore = defineStore('visuals', () => {
-  const showPixelValues = ref(true)
+  const showPixelValues = ref(false)
   const showInputWindow = ref(true)
   const showPixelBorders = ref(false)
   const hoveredChannelIndex = ref<number | null>(null)
