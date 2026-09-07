@@ -1,22 +1,38 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useNetworkStore } from '@/stores/network'
 import { useVisualsStore } from '@/stores/visuals'
 import MatrixCanvas from '@/components/matrix/MatrixCanvas.vue'
 import PixelInspector from '@/components/matrix/PixelInspector.vue'
 import { useKernelHighlight } from '@/composables/useKernelHighlight'
-import { samplesByDataset, type SampleImage } from '@/utils/sampleImages'
+import { useExampleImages } from '@/composables/useExampleImages'
+import { exampleImageCatalog } from '@/utils/exampleImageCatalog'
+import type { SampleImage } from '@/utils/exampleImageParser'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '@/components/ui/context-menu'
+import { Loader2, LucideUpload } from '@lucide/vue'
 
 const networkStore = useNetworkStore()
 const visualsStore = useVisualsStore()
+const exampleImages = useExampleImages()
 
-const activeDataset = ref<'mnist-digits' | 'fashion-mnist'>('mnist-digits')
-const sampleThumbnails = computed<SampleImage[]>(() => samplesByDataset[activeDataset.value])
+const activeExampleSetId = ref(exampleImageCatalog[0]!.id)
+const currentSamples = ref<SampleImage[]>([])
+
+async function loadExampleSet(setId: string) {
+  activeExampleSetId.value = setId
+  currentSamples.value = await exampleImages.loadExamples(setId)
+  if (currentSamples.value[0]) {
+    selectSample(currentSamples.value[0])
+  }
+}
+
+onMounted(() => {
+  loadExampleSet(activeExampleSetId.value)
+})
 
 const sourceSize = computed(() => networkStore.inputImage.length)
 const padding = computed(() => networkStore.convConfig.padding)
@@ -62,11 +78,6 @@ function handleCellClick(payload: { row: number; col: number; value: number }) {
 function handlePixelUpdate(value: number) {
   if (!selectedSourceCell.value) return
   networkStore.setInputPixel(selectedSourceCell.value.row, selectedSourceCell.value.col, value)
-}
-
-function selectDataset(dataset: 'mnist-digits' | 'fashion-mnist') {
-  activeDataset.value = dataset
-  selectSample(sampleThumbnails.value[0]!)
 }
 
 function selectSample(sample: SampleImage) {
@@ -159,38 +170,39 @@ async function loadImageFile(file: File) {
       </div>
 
       <div class="flex flex-col gap-2">
-        <Label class="text-[11px] text-muted-foreground">Example images</Label>
+        <div class="flex items-center justify-between">
+          <Label class="text-[11px] text-muted-foreground">Example images</Label>
+        </div>
         <div class="flex overflow-hidden rounded-md border border-border text-[11px]">
           <button
+            v-for="set in exampleImageCatalog"
+            :key="set.id"
             class="flex-1 py-1.5"
             :class="
-              activeDataset === 'mnist-digits'
+              activeExampleSetId === set.id
                 ? 'bg-primary text-primary-foreground'
                 : 'text-muted-foreground'
             "
-            @click="selectDataset('mnist-digits')"
+            @click="loadExampleSet(set.id)"
           >
-            MNIST Digits
-          </button>
-          <button
-            class="flex-1 py-1.5"
-            :class="
-              activeDataset === 'fashion-mnist'
-                ? 'bg-primary text-primary-foreground'
-                : 'text-muted-foreground'
-            "
-            @click="selectDataset('fashion-mnist')"
-          >
-            Fashion-MNIST
+            {{ set.label }}
           </button>
         </div>
 
-        <div class="flex gap-1.5">
+        <p v-if="exampleImages.error.value" class="text-[11px] text-destructive-foreground">
+          {{ exampleImages.error.value }}
+        </p>
+
+        <Loader2
+          v-if="exampleImages.isLoading.value"
+          class="text-[10px] text-muted-foreground animate-spin"
+        />
+
+        <div v-else class="flex gap-1.5">
           <button
-            v-for="sample in sampleThumbnails"
+            v-for="sample in currentSamples"
             :key="sample.id"
             class="aspect-square w-12 overflow-hidden rounded-md border border-border"
-            :title="sample.label"
             @click="selectSample(sample)"
           >
             <MatrixCanvas :matrix="sample.data" is-pre-normalized />
@@ -200,6 +212,7 @@ async function loadImageFile(file: File) {
 
       <Button variant="secondary" as-child>
         <label class="cursor-pointer">
+          <LucideUpload class="h-4 w-4 stroke-input" />
           Upload Image
           <input type="file" accept="image/*" class="hidden" @change="handleUpload" />
         </label>
