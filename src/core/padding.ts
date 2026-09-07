@@ -1,9 +1,6 @@
 import type { Matrix2D } from '@/types/tensor'
 
-/**
- * Дополняет матрицу нулями по каждой стороне на величину `padding`.
- * padding = 0 возвращает исходную матрицу без копирования лишнего.
- */
+
 export function padMatrix(matrix: Matrix2D, padding: number): Matrix2D {
   if (padding <= 0) return matrix
 
