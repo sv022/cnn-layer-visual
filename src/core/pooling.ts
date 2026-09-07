@@ -16,7 +16,7 @@ export function pool2d(matrix: Matrix2D, config: PoolConfig): Matrix2D {
 
   if (outRows <= 0 || outCols <= 0) {
     throw new Error(
-      `Некорректные размеры пулинга: вход ${rows}x${cols}, окно ${windowSize}, stride ${stride}`,
+      `Invalid pool parameters: input: ${rows}x${cols}, window: ${windowSize}, stride: ${stride}`,
     )
   }
 
