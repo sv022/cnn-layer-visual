@@ -12,6 +12,7 @@ import Checkbox from '../ui/checkbox/Checkbox.vue'
 import KernelPresetPicker from './conv/KernelPresetPicker.vue'
 import Label from '../ui/label/Label.vue'
 import { useKernelPreset } from '@/composables/useKernelPreset.ts'
+import ColorTooltip from './conv/ColorTooltip.vue'
 
 const networkStore = useNetworkStore()
 const visualsStore = useVisualsStore()
@@ -76,8 +77,11 @@ onMounted(() => {
         </div>
 
         <div class="flex-1">
-          <p class="mb-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+          <p
+            class="flex mb-2 text-[10px] items-center font-semibold uppercase tracking-wide text-muted-foreground"
+          >
             Feature maps
+            <ColorTooltip :maps="featureMaps" />
           </p>
           <LayerGrid
             :maps="featureMaps"
