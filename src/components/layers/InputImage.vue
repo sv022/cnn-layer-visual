@@ -103,9 +103,12 @@ async function loadImageFile(file: File) {
 </script>
 
 <template>
-  <Card class="w-85">
-    <CardHeader class="flex-row items-center justify-between space-y-0 pb-2">
-      <CardTitle class="text-[13px] font-semibold">Input</CardTitle>
+  <Card class="w-85 border-l-[3px]" :style="{ borderLeftColor: 'var(--color-input)' }">
+    <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardTitle class="flex items-center gap-1.5 text-[13px] font-semibold">
+        <span class="h-2 w-2 rounded-full" style="background: var(--color-input)" />
+        Input
+      </CardTitle>
       <span class="text-[11px] text-muted-foreground">{{ paddedSize }}×{{ paddedSize }}×1</span>
     </CardHeader>
 
