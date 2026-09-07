@@ -7,6 +7,7 @@ interface LayerTypeTag {
 }
 
 const layerTypes: LayerTypeTag[] = [
+  { label: 'Input', colorVar: 'var(--color-input)' },
   { label: 'Convolution', colorVar: 'var(--color-convolution)' },
   { label: 'Activation', colorVar: 'var(--color-activation)' },
   { label: 'Pooling', colorVar: 'var(--color-pooling)' },
