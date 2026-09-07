@@ -1,20 +1,29 @@
-export type DatasetId = 'mnist-digits' | 'fashion-mnist'
-
 export interface KernelPresetMeta {
-  value: DatasetId
+  id: string
   label: string
   description: string
+  url: string
 }
 
 export const kernelPresetCatalog: KernelPresetMeta[] = [
   {
-    value: 'mnist-digits',
-    label: 'MNIST Digits',
-    description: 'Pretrained kernels for MNIST digits: 3×3',
+    id: 'common-kernels',
+    label: 'Common Kernels',
+    description: 'Classic blur/edge kernels 3×3',
+    url: '/weights/common-kernels.json',
   },
   {
-    value: 'fashion-mnist',
-    label: 'Fashion-MNIST',
-    description: 'Pretrained kernels for Fashion-MNIST: 3×3',
+    id: 'mnist-digits-trained',
+    label: 'MNIST Digits',
+    description: 'Kernels for first convolution layer trained on MNIST digits',
+    url: '/weights/digits-1l-kernels.json',
+  },
+  {
+    id: 'mnist-fashion-trained',
+    label: 'MNIST Fashion',
+    description: 'Kernels for first convolution layer trained on MNIST fashion',
+    url: '/weights/fashion-1l-kernels.json',
   },
 ]
+
+export const defaultKernelPresetId = kernelPresetCatalog[0]!.id

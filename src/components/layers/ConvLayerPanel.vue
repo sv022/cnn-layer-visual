@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useNetworkStore } from '@/stores/network'
 import { useVisualsStore } from '@/stores/visuals'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -10,20 +10,15 @@ import type { HighlightWindow } from '@/composables/useKernelHighlight.ts'
 import { cellToPointWindow, useConvOutputCell } from '@/composables/usePixelProjection.ts'
 import Checkbox from '../ui/checkbox/Checkbox.vue'
 import KernelPresetPicker from './conv/KernelPresetPicker.vue'
-import type { DatasetId } from '@/utils/kernelPresetCatalog.ts'
 import Label from '../ui/label/Label.vue'
+import { useKernelPreset } from '@/composables/useKernelPreset.ts'
 
 const networkStore = useNetworkStore()
 const visualsStore = useVisualsStore()
+const kernelPreset = useKernelPreset()
 
 const kernelMatrices = computed(() => networkStore.convConfig.kernels.map((k) => k.weights))
 const featureMaps = computed(() => networkStore.convOutput)
-
-const activeDatasetId = ref<DatasetId>('mnist-digits')
-function handlePresetChange(datasetId: DatasetId) {
-  activeDatasetId.value = datasetId
-  networkStore.loadPretrainedKernels(datasetId)
-}
 
 const outputShapeLabel = computed(() => {
   const first = featureMaps.value[0]
@@ -50,6 +45,10 @@ function updateStride(value: number) {
 function updatePadding(value: number) {
   networkStore.updateConvConfig({ padding: Math.max(0, value) })
 }
+
+onMounted(() => {
+  kernelPreset.selectPreset(kernelPreset.activePresetId.value)
+})
 </script>
 
 <template>
@@ -120,8 +119,9 @@ function updatePadding(value: number) {
           Feature maps
         </p>
         <KernelPresetPicker
-          :model-value="activeDatasetId"
-          @update:model-value="handlePresetChange"
+          :model-value="kernelPreset.activePresetId.value"
+          :is-loading="kernelPreset.isLoading.value"
+          @update:model-value="kernelPreset.selectPreset"
         />
       </div>
     </CardContent>
